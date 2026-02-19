@@ -1,17 +1,17 @@
-# LP Smart Code E2E Test
+# Smart Code Test E2E
 
 A comprehensive **E2E testing** skill for AI agents. Focused exclusively on end-to-end tests — full user journeys through a real browser. Framework-agnostic (Playwright, Cypress, Selenium). Generates ideal E2E tests and reviews existing ones using best practices from Kent Beck, Martin Fowler, Mike Cohn, Guillermo Rauch, and Google.
 
 ## Installation
 
 ```bash
-npx skills add lordprotein/lp-smart-code-e2e-test
+npx skills add lordprotein/smart-code-test-e2e
 ```
 
 Or via Agent Skills:
 
 ```bash
-npx agent-skills-cli install @lordprotein/lp-smart-code-e2e-test
+npx agent-skills-cli install @lordprotein/smart-code-test-e2e
 ```
 
 ## Features
@@ -31,7 +31,7 @@ npx agent-skills-cli install @lordprotein/lp-smart-code-e2e-test
 After installation, run:
 
 ```
-/lp-smart-code-e2e-test
+/smart-code-test-e2e
 ```
 
 ### Mode 1: Generate E2E Tests
@@ -84,7 +84,7 @@ The skill reviews existing E2E tests for quality issues:
 ## Structure
 
 ```
-lp-smart-code-e2e-test/
+smart-code-test-e2e/
 ├── SKILL.md                              # Main skill definition
 ├── agents/
 │   └── agent.yaml                        # Agent interface config

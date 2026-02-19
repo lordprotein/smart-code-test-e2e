@@ -2,36 +2,15 @@
 
 ## Identifying Critical Paths
 
-Three heuristics for finding which flows deserve E2E coverage:
+Three heuristics — apply all, then deduplicate:
 
-### 1. Follow the money
+| Heuristic | What to cover |
+|-----------|--------------|
+| **Follow the money** | Checkout, payment, subscriptions, refunds, trial-to-paid conversion |
+| **Follow the user** | Registration, login, core feature usage, password reset, account recovery |
+| **Follow the data** | Record creation (no undo), bulk ops, irreversible deletion, file upload, cross-system sync |
 
-Any flow where money changes hands or financial state changes:
-- Checkout and payment
-- Subscription creation, upgrade, downgrade, cancellation
-- Refund and credit processing
-- Invoice generation
-- Free trial to paid conversion
-
-### 2. Follow the user
-
-Core user lifecycle and retention flows:
-- Registration and onboarding
-- Login and session management
-- Core feature usage (the "job to be done")
-- Profile management
-- Password reset and account recovery
-
-### 3. Follow the data
-
-Flows where data is created, transformed, or destroyed:
-- Record creation (especially without undo)
-- Bulk operations (import, export, mass update)
-- Data deletion (especially irreversible)
-- File upload and processing
-- Cross-system data synchronization
-
-**Apply all three heuristics**, then deduplicate. The union of these lists is your candidate set for E2E coverage.
+The union of these lists is your candidate set for E2E coverage.
 
 ---
 
@@ -181,132 +160,67 @@ test_adding_item_updates_cart_badge():
 
 ## Forms in E2E
 
-### Test the complete submission, not field-by-field validation
-
-```
-# BAD -- testing individual field validation (this is a unit test concern)
-test_email_field_shows_error_for_invalid_email():
-    form.fill_email("not-an-email")
-    form.tab_to_next_field()
-    assert form.email_error == "Invalid email"
-
-# GOOD -- test the complete form submission journey
-test_registration_with_invalid_data_shows_errors():
-    reg_page = RegistrationPage(page)
-    reg_page.fill_form(name="", email="bad", password="123")
-    reg_page.submit()
-
-    assert reg_page.has_errors()
-    assert reg_page.is_on_registration_page()  # Did not navigate away
-```
-
-### E2E form testing strategy
+Test complete form submission, not field-by-field validation. Field-level validation belongs in unit tests.
 
 | Test | What to verify |
 |------|---------------|
-| **Happy path** | Fill all fields correctly -> submit -> verify success |
+| **Happy path** | Fill all fields -> submit -> verify success |
 | **All required missing** | Submit empty -> verify error state shown |
-| **Fix and resubmit** | Submit invalid -> see errors -> fix -> resubmit -> verify success |
+| **Fix and resubmit** | Submit invalid -> see errors -> fix -> resubmit -> success |
 | **Long form preservation** | Fill many fields -> fail on one -> other fields preserved |
-
-**Field-level validation** (specific format, min/max length, regex) belongs in unit tests. E2E verifies that the form works as a whole.
 
 ---
 
 ## CRUD Lifecycle Testing
 
-Test the full lifecycle of a resource in a single test:
+Test full lifecycle in one test (Create -> Read -> Update -> Delete) or separate per operation when each is independently complex. Always create via API for Read/Update/Delete tests. Verify visible results: item appears in list after create, gone after delete.
 
 ```
 test_product_crud_lifecycle():
     products = ProductsPage(page)
-
-    # Create
     new_product = products.create(name="Widget", price=29.99)
     assert new_product.name == "Widget"
-    assert new_product.price == "$29.99"
 
-    # Read (verify in list)
     products.navigate_to_list()
     assert products.has_product("Widget")
 
-    # Update
     edit_page = products.open_product("Widget")
     edit_page.update_price(39.99)
     edit_page.save()
     assert edit_page.price == "$39.99"
 
-    # Delete
     edit_page.delete()
     products.navigate_to_list()
     assert not products.has_product("Widget")
 ```
 
-### CRUD test guidelines
-
-| Guideline | Rationale |
-|-----------|-----------|
-| **Lifecycle as one test** | Tests the full resource journey, catches state transition bugs |
-| **OR separate per operation** | When operations are independently complex. Create via API for Read/Update/Delete tests |
-| **Verify visible results** | After create: item appears in list. After delete: item gone from list |
-| **Test both detail and list views** | Create on form, verify on list. Edit on detail, verify on list |
-
 ---
 
 ## Search and Filter Flows
 
-```
-test_product_search_returns_relevant_results():
-    # Arrange -- create known data
-    api.create_product(name="Blue Widget")
-    api.create_product(name="Red Widget")
-    api.create_product(name="Green Gadget")
-
-    # Act -- search
-    products = ProductsPage(page)
-    products.search("Widget")
-
-    # Assert -- only relevant results
-    assert products.result_count == 2
-    assert products.has_product("Blue Widget")
-    assert products.has_product("Red Widget")
-    assert not products.has_product("Green Gadget")
-```
-
-### What to cover
-
 | Scenario | What to verify |
 |----------|---------------|
 | **Search with results** | Results are relevant, count is correct |
-| **Search with no results** | Empty state message shown, not a blank page |
+| **Search with no results** | Empty state message shown |
 | **Filter application** | Results match filter criteria |
-| **Filter combination** | Multiple filters narrow results correctly (AND/OR) |
+| **Filter combination** | Multiple filters narrow correctly (AND/OR) |
 | **Clear filters** | All results return after clearing |
 | **Search + filter together** | Both applied simultaneously |
+
+Setup: create known data via API, then search/filter against it. Assert on result count and specific items.
 
 ---
 
 ## Empty States
 
-Test what the user sees when there is no data:
-
-```
-test_new_user_sees_empty_order_history():
-    # Fresh user with no orders
-    login_as(new_user)
-    orders = navigate_to("/orders")
-
-    assert orders.is_empty()
-    assert orders.empty_message == "You have no orders yet"
-    assert orders.has_cta("Browse Products")  # Helpful next action
-```
-
-### Common empty states to test
+Test what users see with no data. Common empty states:
 - New account: no orders, no saved items, no notifications
 - Empty cart: message + CTA to browse
 - No search results: helpful message + suggestions
-- Empty dashboard: onboarding prompts or getting-started guide
-- Empty admin list: "No users match your filters" + clear filters CTA
+- Empty dashboard: onboarding prompts
+- Empty admin list: "No matches" + clear filters CTA
+
+Verify: empty state message is shown, helpful CTA exists, page is not blank.
 
 ---
 
@@ -342,29 +256,3 @@ Flow: User Registration
 
 **Rule**: If your E2E test count for a single flow exceeds 8, you are testing too much at the E2E level. Push detailed scenarios down to cheaper test types.
 
----
-
-## Flow Mapping Template
-
-Before writing tests, map the flow:
-
-```
-Flow: Checkout
-  Entry point: Cart page with items
-  Steps:
-    1. Cart review -> click "Checkout"
-    2. Shipping address form -> fill and continue
-    3. Payment method -> fill and continue
-    4. Order review -> place order
-  Success state: Order confirmation page
-  Error states:
-    - Payment declined -> error message, stay on payment step
-    - Out of stock (during checkout) -> error, link to cart
-    - Session expired -> redirect to login, preserve cart
-  Prerequisite data:
-    - User account (programmatic auth)
-    - Product in cart (API setup)
-  Risk tags: PAYMENT
-```
-
-Use this template to plan tests before writing them. The map directly translates into test scenarios.

@@ -25,8 +25,6 @@ test_order_submission():
 
 **Fix:** Replace every `sleep()` with wait-for-condition: text appeared, element visible, URL changed, or network response received.
 
-**Why it matters:** Hardcoded waits are either too short (flaky) or too long (slow). Conditions are both faster and reliable.
-
 ---
 
 ## 2. The Ice Cream Cone (🟠 High)
@@ -36,15 +34,14 @@ test_order_submission():
 **Signals:** E2E suite > 30 min, >15% of total tests are E2E, simple validation logic tested via browser, developers avoid running E2E locally.
 
 ```
-# BAD — testing validation logic in E2E
+# BAD — validation logic in E2E (should be unit test)
 test_email_validation():
     page.fill("email", "invalid")
     page.click("submit")
-    assert page.text("Invalid email")            # This should be a unit test!
+    assert page.text("Invalid email")
 
-# GOOD — unit test for validation, E2E for the flow
-# Unit: test_email_validator_rejects_invalid_format()
-# E2E:  test_registration_happy_path()           # Tests the complete flow
+# GOOD — E2E tests the flow, unit tests the validation
+# E2E:  test_registration_happy_path()
 ```
 
 **Fix:** Move logic testing to unit tests. E2E tests user journeys, not individual validations. Ask: "Does this test require a browser?" If no, it is not an E2E test.
@@ -58,22 +55,15 @@ test_email_validation():
 **Signals:** Tests fail when run individually but pass in sequence. Test B uses data created by Test A. Suite fails if one test in the middle fails.
 
 ```
-# BAD — tests are chained
+# BAD — chained
 test_1_create_product():
     create_product("Widget")
-
 test_2_edit_product():
-    # Depends on test_1 having created "Widget"!
-    edit_product("Widget", price=39.99)
+    edit_product("Widget", price=39.99)       # Depends on test_1!
 
-test_3_delete_product():
-    # Depends on test_1 and test_2!
-    delete_product("Widget")
-
-# GOOD — each test is independent
+# GOOD — independent
 test_edit_product():
-    product = api.create_product("Widget", price=29.99)    # Own setup
-    navigate_to(product.url)
+    product = api.create_product("Widget")    # Own setup
     edit_product(price=39.99)
     assert product_price() == "$39.99"
 ```
@@ -91,20 +81,13 @@ test_edit_product():
 **Signals:** 20+ assertions, multiple unrelated user flows, test name is vague ("test_everything", "test_app"), test takes >2 minutes alone.
 
 ```
-# BAD — The Greedy Test
+# BAD — tests registration AND login AND profile AND settings
 test_application():
-    # Tests registration AND login AND profile AND settings AND logout
-    register(user)
-    login(user)
-    update_profile(user)
-    change_settings(user)
-    logout()
-    # 15 assertions across unrelated flows
+    register(user); login(user); update_profile(user); logout()
 
 # GOOD — focused on one flow
 test_user_can_update_profile():
     login_as(user)
-    navigate_to("/profile")
     update_name("New Name")
     assert page.has_text("New Name")
 ```
@@ -151,19 +134,14 @@ page.click(role="button", name="Confirm")
 **Signals:** Every test file starts with `fill("username"), fill("password"), click("login")`. Login takes 3-5 seconds per test. 50 tests = 3+ minutes just logging in.
 
 ```
-# BAD — UI login in every test
+# BAD — UI login in every test (2-5s each)
 test_dashboard():
-    page.fill("username", "admin")
-    page.fill("password", "pass")
-    page.click("Login")
-    wait_for_url("/dashboard")
-    # Now test actually begins...
+    page.fill("username", "admin"); page.fill("password", "pass"); page.click("Login")
 
-# GOOD — programmatic auth
+# GOOD — programmatic auth (<100ms)
 test_dashboard():
-    login_via_api(admin_user)                    # <100ms, no UI
+    login_via_api(admin_user)
     navigate_to("/dashboard")
-    # Test begins immediately
 ```
 
 **Fix:** One dedicated test for the UI login flow. All other tests use programmatic authentication (API call, cookie injection, storage state reuse).
@@ -179,14 +157,9 @@ test_dashboard():
 ```
 # BAD — masking flakiness with retries
 config:
-    retries: 3                                   # "It usually passes on the second try"
+    retries: 3
 
-# GOOD — fix the root cause
-# Instead of retrying, investigate WHY the test is flaky:
-# - Missing wait?     -> Add proper wait-for-condition
-# - Race condition?   -> Wait for network response
-# - Shared data?      -> Isolate test data
-# - Unstable selector? -> Use accessible selector
+# GOOD — fix root cause: missing wait? race condition? shared data? unstable selector?
 ```
 
 **Fix:** Retries are a band-aid. Investigate and fix the root cause. If retries are used in CI, log which tests needed them and track flakiness rate. A test that needs retries is a broken test.
@@ -201,22 +174,18 @@ config:
 
 ```
 # BAD — shared mutable data
-global_user = create_user()                      # Created once, used by all tests
-
+global_user = create_user()                    # Created once, used by all tests
 test_1():
-    global_user.update(name="Changed")           # Mutates shared data!
-
+    global_user.update(name="Changed")         # Mutates shared data!
 test_2():
-    assert global_user.name == "Original"        # FAILS — test_1 changed it!
+    assert global_user.name == "Original"      # FAILS — test_1 changed it!
 
-# GOOD — isolated data
+# GOOD — each test owns its data
 test_1():
-    user = create_user()                         # Own data
+    user = create_user()
     user.update(name="Changed")
-    assert user.name == "Changed"
-
 test_2():
-    user = create_user()                         # Own data
+    user = create_user()
     assert user.name == "Original"
 ```
 
@@ -231,24 +200,16 @@ test_2():
 **Signals:** No assertions on visible outcome, asserting on setup data, asserting on mock return values, test body has no `assert` at all (just actions).
 
 ```
-# BAD — no real assertion
+# BAD — no real assertion (passes because nothing throws)
 test_order_placement():
     fill_checkout_form()
     click_submit()
-    # Test "passes" because nothing throws... but did the order actually go through?
-
-# BAD — asserting on what you set up
-test_order_placement():
-    mock_api("/orders", response={status: "created"})
-    click_submit()
-    assert response.status == "created"          # Asserting on your own mock!
 
 # GOOD — assert on visible user outcome
 test_order_placement():
     fill_checkout_form()
     click_submit()
     assert page.has_text("Order confirmed")
-    assert page.has_text("Order #")
     assert page.url.includes("/confirmation")
 ```
 
@@ -263,15 +224,8 @@ test_order_placement():
 **Signals:** Hardcoded URLs (`http://localhost:3000`), hardcoded ports, environment-specific test data, works on local but fails in CI.
 
 ```
-# BAD — hardcoded environment
-test_homepage():
-    navigate_to("http://localhost:3000")
-    page.fill("email", "admin@mylocal.dev")
-
-# GOOD — configurable
-test_homepage():
-    navigate_to(BASE_URL)                        # Set via environment variable
-    page.fill("email", TEST_ADMIN_EMAIL)         # From config
+# BAD: navigate_to("http://localhost:3000")
+# GOOD: navigate_to(BASE_URL)  # environment variable
 ```
 
 **Fix:** Use environment variables for URLs, credentials, and configuration. Tests should work in local, CI, and staging without code changes.
@@ -285,17 +239,8 @@ test_homepage():
 **Signals:** Functional tests rely on screenshot comparison, font rendering differences cause failures, functional tests break after CSS refactor with no behavior change.
 
 ```
-# BAD — screenshot as functional assertion
-test_checkout_works():
-    fill_form()
-    click_submit()
-    compare_screenshot("checkout-success.png")   # Fails if font changes!
-
-# GOOD — assert on behavior, not pixels
-test_checkout_works():
-    fill_form()
-    click_submit()
-    assert page.has_text("Order confirmed")
+# BAD: compare_screenshot("checkout-success.png")  # Fails if font changes!
+# GOOD: assert page.has_text("Order confirmed")    # Behavior, not pixels
 ```
 
 **Fix:** Use visual regression for dedicated visual tests (separate suite). Use text/element/state assertions for functional tests. These are two different concerns.
@@ -309,12 +254,11 @@ test_checkout_works():
 **Signals:** Only sunny-day API tests, no error simulation, no timeout handling, app breaks on 500 but no test catches it.
 
 ```
-# BAD — only tests the sunny day
+# BAD — only sunny day
 test_payment():
     fill_payment_form()
     click_pay()
     assert page.has_text("Payment successful")
-    # What happens when payment fails? Timeout? 500 error?
 
 # GOOD — tests failure scenarios too
 test_payment_api_failure():
@@ -322,13 +266,6 @@ test_payment_api_failure():
     fill_payment_form()
     click_pay()
     assert page.has_text("Payment failed. Please try again.")
-    assert payment_form.is_still_visible()       # User can retry
-
-test_payment_timeout():
-    mock_api("/payment", delay=30000)            # Simulate timeout
-    fill_payment_form()
-    click_pay()
-    assert page.has_text("Request timed out")
 ```
 
 **Fix:** For every critical external API integration, test at least: success, server error (500), and timeout. Users will encounter these scenarios.

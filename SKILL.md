@@ -1,5 +1,5 @@
 ---
-name: lp-smart-code-e2e-test
+name: smart-code-test-e2e
 description: "Write ideal E2E tests and review existing ones. Focused exclusively on end-to-end testing — full user journeys through a real browser. Not for unit or integration tests. Two modes: generate new E2E tests from feature analysis, or review existing E2E tests for antipatterns, flakiness, and quality issues. Framework-agnostic, based on best practices from Beck, Fowler, Cohn, Rauch, and Google."
 ---
 
@@ -76,13 +76,9 @@ This skill is focused **exclusively on E2E testing**:
 - Load `references/e2e-testing-principles.md` for the E2E Flow Classification Matrix.
 - Categorize each user flow using two axes: **business criticality** x **flow complexity** + **risk tags**.
 
-| | Low complexity (single page CRUD) | Medium complexity (multi-step, cross-page) | High complexity (cross-service, external) |
-|---|---|---|---|
-| **Critical** (revenue, auth, data integrity) | Core CRUD — few focused tests | Critical Journeys — sweet spot, test thoroughly | System integration — key paths only |
-| **Important** (frequently used features) | Happy path only | Happy + primary sad paths | Happy path + monitoring |
-| **Nice-to-have** (cosmetic, rare features) | Skip E2E | Skip or smoke test only | Contract tests instead of E2E |
+Apply the **E2E Flow Classification Matrix** from the loaded `e2e-testing-principles.md` reference.
 
-Risk tags: `PAYMENT`, `AUTH`, `DATA_INTEGRITY`, `PII`, `COMPLIANCE` — override matrix, always require E2E regardless of position.
+Risk tags (`PAYMENT`, `AUTH`, `DATA_INTEGRITY`, `PII`, `COMPLIANCE`) override the matrix — always require E2E regardless of position.
 
 - Report classification to user before generating tests.
 - For nice-to-have + low complexity: recommend skipping E2E, suggest unit/integration instead.
@@ -281,26 +277,38 @@ Assign severity to each finding:
 **Overall assessment**: [APPROVE / REQUEST_CHANGES / COMMENT]
 **Flakiness risk**: [Low / Medium / High]
 **Flow coverage**: [Good / Adequate / Insufficient]
+**Flows checked**: [list of checked flows, e.g., checkout, registration, profile]
 
 ---
 
 ## Findings
 
 ### 🔴 Critical
-(none or list)
+(none or list — use the finding format below)
 
 ### 🟠 High
-1. **[test_file:line]** Brief title
-   - **Antipattern**: Which antipattern
-   - **Problem**: What's wrong
-   - **Impact**: Why it matters (flakiness, false confidence, slow CI)
-   - **Fix**: Suggested correction with code example
 
 ### 🟡 Medium
-2. (continue numbering)
 
 ### 🟢 Low
-...
+
+> **Finding format** (use for each issue):
+>
+> N. **Brief title**
+>
+>    **Status:** 🟠 High
+>    **Files:** `test_file.ts:42`
+>
+>    **Description:**
+>    [problematic code or description]
+>
+>    **Fix:**
+>    [suggested fix with code example]
+>
+> For file-specific remarks, use inline comments:
+> `::code-comment{file="path/to/file.ts" line="42" severity="high"}`
+> Description and fix.
+> `::`
 
 ---
 

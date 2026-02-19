@@ -68,48 +68,18 @@ class ProductPage:
         return self.page.get_by_text("In Stock").is_visible()
 ```
 
-### Assertions in Page Objects -- the debate
-
-| Approach | When to use |
-|----------|-------------|
-| **No assertions in POM** (recommended) | Tests own all assertions. POM only exposes state. Clearer separation of concerns |
-| **Assertions in POM** (alternative) | Convenience methods like `has_error_message()` returning bool. Acceptable for complex visibility checks |
-
-**Recommendation**: Keep assertions in tests. Page Objects return data, tests verify it.
+**Rule**: Keep assertions in tests, not Page Objects. POM exposes state, tests verify it.
 
 ---
 
 ## Screenplay Pattern
 
-Actor-centric pattern for complex multi-page workflows:
-
-```
-# Actor has Abilities, performs Tasks, checks Questions
-actor = Actor.named("Customer")
-    .who_can(BrowseTheWeb.using(browser))
-    .who_can(CallAPI.at(base_url))
-
-actor.attempts_to(
-    Navigate.to("/products"),
-    AddToCart.product("Widget"),
-    Checkout.with_shipping("123 Main St"),
-    Pay.with_card("4111111111111111")
-)
-
-actor.should_see(
-    that(OrderConfirmation.message(), equals("Order placed")),
-    that(OrderConfirmation.total(), equals("$29.99"))
-)
-```
-
-### When to use Screenplay vs POM
+Actor-centric pattern for complex multi-actor workflows. Actors have Abilities, perform Tasks, check Questions.
 
 | Criteria | POM | Screenplay |
 |----------|-----|------------|
 | Team size | Small-medium | Large, multiple teams |
 | Flow complexity | Simple-medium page flows | Multi-actor, multi-system |
-| Learning curve | Low | Higher |
-| Composition | Inheritance-based | Composition-based |
 | Multi-role testing | Awkward (multiple POM instances) | Natural (multiple actors) |
 
 **Default choice**: POM for most projects. Screenplay when you need multi-actor scenarios or highly composable test steps.
@@ -150,21 +120,7 @@ test_user_can_place_order():
 
 ## Given-When-Then for E2E
 
-```
-test_returning_customer_sees_saved_address():
-    # Given a customer with a saved shipping address
-    customer = api.create_customer(address="123 Main St")
-    login_as(customer)
-
-    # When they proceed to checkout
-    cart = CartPage(page)
-    checkout = cart.proceed_to_checkout()
-
-    # Then their saved address is pre-filled
-    assert checkout.shipping_address == "123 Main St"
-```
-
-Use Given-When-Then when tests serve as living documentation for stakeholders. Functionally equivalent to AAA.
+Functionally equivalent to AAA with Given/When/Then comments. Use when tests serve as living documentation for stakeholders. Same rules as AAA apply.
 
 ---
 
@@ -231,34 +187,19 @@ test_api_returns_200
 
 ## Test Organization
 
-### Organize by feature/flow, not by page
+Organize by feature/flow, not by page:
 
 ```
-# GOOD -- organized by user flow
 e2e/
   auth/
     login.e2e.ts
     registration.e2e.ts
-    password-reset.e2e.ts
   checkout/
     checkout-happy-path.e2e.ts
     checkout-errors.e2e.ts
   products/
     product-search.e2e.ts
-    product-crud.e2e.ts
-  settings/
-    profile.e2e.ts
-    notifications.e2e.ts
-
-# BAD -- organized by page (mirrors UI structure)
-e2e/
-  header.e2e.ts
-  homepage.e2e.ts
-  sidebar.e2e.ts
-  modal.e2e.ts
 ```
-
-### File guidelines
 
 | Guideline | Rationale |
 |-----------|-----------|
@@ -331,47 +272,5 @@ test_user_cannot_see_user_management(use_auth=regular_state):
     assert not dashboard.has_menu_item("User Management")
 ```
 
-### Why programmatic auth matters
+Programmatic auth: <100ms vs 2-5s per test for UI login. Storage state reuse: ~0ms. Always prefer programmatic.
 
-| Approach | Time per test | 50 tests | Flakiness risk |
-|----------|--------------|----------|----------------|
-| UI login every test | 2-5 seconds | 100-250 seconds wasted | High -- login UI can break |
-| Programmatic auth | < 100ms | < 5 seconds total | Low -- API is stable |
-| Storage state reuse | ~0ms | ~0 seconds | Lowest -- no auth call at all |
-
----
-
-## Data Setup Patterns
-
-### API-first setup
-
-```
-# BAD -- creating data through UI is slow and fragile
-test_user_can_edit_product():
-    # 15 clicks to create a product through UI...
-    products_page.click_new()
-    products_page.fill_name("Widget")
-    products_page.fill_price("29.99")
-    products_page.save()
-    # NOW test the actual edit...
-
-# GOOD -- create via API, test only the edit journey
-test_user_can_edit_product():
-    product = api.create_product(name="Widget", price=29.99)
-    navigate_to(product.edit_url)
-
-    edit_page = ProductEditPage(page)
-    edit_page.update_price("39.99")
-    edit_page.save()
-
-    assert edit_page.success_message == "Product updated"
-```
-
-### Data isolation
-
-| Strategy | How | When |
-|----------|-----|------|
-| **Create per test** | Each test creates its own data via API | Default -- safest |
-| **Unique identifiers** | Append timestamp/UUID to names | When testing search, lists |
-| **Cleanup after test** | Delete created data in teardown | When data persists across runs |
-| **Ephemeral environment** | Fresh database per test run | CI pipeline, most reliable |

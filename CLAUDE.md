@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-**lp-smart-code-e2e-test** — AI skill (Claude Code skill) for writing and reviewing E2E tests. Framework-agnostic (Playwright, Cypress, Selenium), focused exclusively on end-to-end testing — full user journeys through a real browser. Based on practices from Beck, Fowler, Cohn, Rauch, and Google.
+**smart-code-test-e2e** — AI skill (Claude Code skill) for writing and reviewing E2E tests. Framework-agnostic (Playwright, Cypress, Selenium), focused exclusively on end-to-end testing — full user journeys through a real browser. Based on practices from Beck, Fowler, Cohn, Rauch, and Google.
 
 Two modes:
 - **Generate** (default) — analyze features, classify flows, produce E2E tests with Page Objects
@@ -20,7 +20,7 @@ references/           ← Knowledge base loaded on-demand during skill execution
 
 ### Skill Execution Flow
 
-The skill is invoked via `/lp-smart-code-e2e-test`. SKILL.md defines the entire workflow:
+The skill is invoked via `/smart-code-test-e2e`. SKILL.md defines the entire workflow:
 
 **Generate mode** (7 steps): Determine scope → Preflight → Classify flows (E2E Flow Matrix) → Determine scenarios → Generate tests → Self-check antipatterns → Output
 

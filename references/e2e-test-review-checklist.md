@@ -4,49 +4,14 @@ Structured checklist for reviewing E2E tests. Use the Quick-Start Review Sequenc
 
 ---
 
-## Severity Levels
-
-| Badge | Level        | Examples                                             | Action              |
-|-------|--------------|------------------------------------------------------|---------------------|
-| 🔴    | **Critical** | False confidence, flaky tests, shared mutable data   | Must fix immediately |
-| 🟠    | **High**     | Sleep waits, CSS selectors, UI auth everywhere, missing coverage | Should fix before merge |
-| 🟡    | **Medium**   | Readability, naming, organization, environment-specific | Fix in this PR or follow-up |
-| 🟢    | **Low**      | Style, minor suggestions                             | Optional             |
-
----
-
 ## 1. Four Pillars Assessment for E2E
 
-### Confidence (Protection)
+> Apply Four Pillars from `e2e-testing-principles.md`. Key checks per pillar:
 
-- [ ] Tests cover critical user journeys (revenue, auth, data)
-- [ ] Happy paths are tested for all critical flows
-- [ ] Key sad paths are tested (payment failure, validation errors)
-- [ ] Tests would catch real user-facing bugs
-- [ ] Risk-tagged flows (PAYMENT, AUTH, PII) have E2E coverage
-
-### Resistance to Refactoring
-
-- [ ] Tests use accessible selectors (role, label, text), not CSS/XPath
-- [ ] Tests verify user-visible outcomes, not DOM structure
-- [ ] Tests survive UI restructuring if user-visible behavior is unchanged
-- [ ] Page Objects encapsulate implementation details
-
-### Speed (Relative)
-
-- [ ] No `sleep()` / hardcoded waits
-- [ ] Programmatic auth (not UI login) for most tests
-- [ ] API-based data setup (not UI-based)
-- [ ] Tests can run in parallel
-- [ ] Full suite < 15 minutes
-
-### Determinism
-
-- [ ] Tests pass 100% on repeated runs (no flakiness)
-- [ ] Proper wait strategies (auto-wait + explicit conditions)
-- [ ] Isolated test data (no cross-test pollution)
-- [ ] No time-dependent logic without clock control
-- [ ] No dependency on external services (mocked at network level)
+- [ ] **Confidence**: Critical journeys covered, happy + sad paths, risk-tagged flows have E2E
+- [ ] **Resistance to Refactoring**: Accessible selectors, user-visible outcomes, Page Objects encapsulate details
+- [ ] **Speed**: No sleep(), programmatic auth, API-based setup, parallel-ready, suite < 15 min
+- [ ] **Determinism**: 100% pass rate on reruns, proper waits, isolated data, no external service dependency
 
 ---
 
