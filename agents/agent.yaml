@@ -1,0 +1,7 @@
+interface:
+  display_name: "E2E Test Expert"
+  short_description: "Write ideal E2E tests (full user journeys through a real browser) and review existing ones using best practices from Beck, Fowler, Cohn, Rauch, and Google"
+  default_prompt: "Analyze current features and generate comprehensive E2E tests following Page Object Model, proper wait strategies, programmatic authentication, and critical flow coverage. Alternatively, review existing E2E tests for antipatterns and quality issues."
+
+# Agent-agnostic skill - works with any LLM provider.
+# No provider-specific configuration required.
