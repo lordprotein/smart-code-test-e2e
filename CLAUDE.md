@@ -48,7 +48,7 @@ Each reference file is loaded at specific steps, not all at once:
 
 - **E2E Flow Classification Matrix** (criticality × complexity + risk tags) drives which flows get tested and how
 - **Risk tags** (PAYMENT, AUTH, DATA_INTEGRITY, PII, COMPLIANCE) override the matrix — always require E2E
-- **Severity levels** P0-P3: P0 = false confidence/flakiness/shared data, P1 = sleep waits/CSS selectors/UI auth, P2 = readability, P3 = style
+- **Severity levels**: 🔴 Critical = false confidence/flakiness/shared data, 🟠 High = sleep waits/CSS selectors/UI auth, 🟡 Medium = readability, 🟢 Low = style
 - **Programmatic auth by default**: one UI login test, all others via API
 - **Determinism first**: no sleep(), proper waits, isolated data
 - **Confirmation-first**: never write test files to disk without user confirmation

@@ -51,7 +51,7 @@ The skill reviews existing E2E tests for quality issues:
 1. Evaluates flakiness risk, wait strategies, selector quality
 2. Detects antipatterns (The Sleeper, The Chain Gang, The False Prophet, etc.)
 3. Assesses flow coverage and auth efficiency
-4. Reports findings by severity (P0-P3)
+4. Reports findings by severity (🔴 Critical / 🟠 High / 🟡 Medium / 🟢 Low)
 5. Asks for confirmation before implementing fixes
 
 ## Workflow
@@ -68,18 +68,18 @@ The skill reviews existing E2E tests for quality issues:
 ### Review Mode
 1. **Preflight** — Collect E2E test files, read Page Objects, production code
 2. **Evaluate** — 10-step procedure: flakiness → assertions → isolation → waits → selectors → coverage → abstraction → data → readability → auth
-3. **Severity** — Assign P0-P3 to each finding
+3. **Severity** — Assign 🔴/🟠/🟡/🟢 to each finding
 4. **Output** — Findings with flakiness risk assessment and suggested fixes
 5. **Confirm** — Ask user before implementing changes
 
 ## Severity Levels
 
-| Level | Name | Action |
-|-------|------|--------|
-| P0 | Critical | Must fix — false confidence, flaky tests, shared data |
-| P1 | High | Should fix — sleep waits, CSS selectors, UI auth, missing coverage |
-| P2 | Medium | Fix or follow-up — readability, naming, organization |
-| P3 | Low | Optional — style, minor suggestions |
+| Badge | Level | Action |
+|-------|-------|--------|
+| 🔴 | **Critical** | Must fix — false confidence, flaky tests, shared data |
+| 🟠 | **High** | Should fix — sleep waits, CSS selectors, UI auth, missing coverage |
+| 🟡 | **Medium** | Fix or follow-up — readability, naming, organization |
+| 🟢 | **Low** | Optional — style, minor suggestions |
 
 ## Structure
 

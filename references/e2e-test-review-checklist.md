@@ -6,12 +6,12 @@ Structured checklist for reviewing E2E tests. Use the Quick-Start Review Sequenc
 
 ## Severity Levels
 
-| Level | Name     | Examples                                             | Action              |
-|-------|----------|------------------------------------------------------|---------------------|
-| P0    | Critical | False confidence, flaky tests, shared mutable data   | Must fix immediately |
-| P1    | High     | Sleep waits, CSS selectors, UI auth everywhere, missing coverage | Should fix before merge |
-| P2    | Medium   | Readability, naming, organization, environment-specific | Fix in this PR or follow-up |
-| P3    | Low      | Style, minor suggestions                             | Optional             |
+| Badge | Level        | Examples                                             | Action              |
+|-------|--------------|------------------------------------------------------|---------------------|
+| 🔴    | **Critical** | False confidence, flaky tests, shared mutable data   | Must fix immediately |
+| 🟠    | **High**     | Sleep waits, CSS selectors, UI auth everywhere, missing coverage | Should fix before merge |
+| 🟡    | **Medium**   | Readability, naming, organization, environment-specific | Fix in this PR or follow-up |
+| 🟢    | **Low**      | Style, minor suggestions                             | Optional             |
 
 ---
 
@@ -52,13 +52,13 @@ Structured checklist for reviewing E2E tests. Use the Quick-Start Review Sequenc
 
 ## 2. Antipattern Detection
 
-### P0 — Must fix immediately
+### 🔴 Critical — Must fix immediately
 
 - [ ] **The False Prophet** — tests without meaningful visible-outcome assertions
 - [ ] **The Data Leaker** — shared mutable test data across tests
 - [ ] **The Chain Gang (severe)** — tests completely dependent on execution order
 
-### P1 — Should fix before merge
+### 🟠 High — Should fix before merge
 
 - [ ] **The Sleeper** — `sleep()` / hardcoded waits
 - [ ] **The Chain Gang (moderate)** — soft dependencies between tests
@@ -69,7 +69,7 @@ Structured checklist for reviewing E2E tests. Use the Quick-Start Review Sequenc
 - [ ] **The Network Optimist** — no error or timeout scenario tests
 - [ ] **The Ice Cream Cone** — too many E2E tests, too few unit tests
 
-### P2 — Fix in this PR or follow-up
+### 🟡 Medium — Fix in this PR or follow-up
 
 - [ ] **The Environment Prisoner** — hardcoded environment values
 - [ ] **The Pixel Watcher** — screenshot comparison for functional assertions
@@ -164,17 +164,17 @@ Structured checklist for reviewing E2E tests. Use the Quick-Start Review Sequenc
 
 ## Quick-Start Review Sequence
 
-When reviewing E2E tests, follow this exact order. Stop and report as soon as P0 issues are found.
+When reviewing E2E tests, follow this exact order. Stop and report as soon as 🔴 Critical issues are found.
 
-| Step | Check                    | Severity | What to look for                                   |
-|------|--------------------------|----------|-----------------------------------------------------|
-| 1    | False Prophets           | P0       | Meaningful visible-outcome assertions?              |
-| 2    | Flakiness                | P0       | Non-deterministic elements? Race conditions? Shared data? |
-| 3    | Isolation                | P0       | Tests independent? Own data? No order dependency?   |
-| 4    | Waits                    | P1       | `sleep()`? Proper wait-for-condition strategy?      |
-| 5    | Selectors                | P1       | CSS/XPath? Accessible selectors used?               |
-| 6    | Coverage                 | P1       | Critical user journeys tested?                      |
-| 7    | Abstraction              | P1       | Page Objects? Code duplication?                     |
-| 8    | Data management          | P1       | API setup? Cleanup? Data isolation?                 |
-| 9    | Readability              | P2       | Clear names? AAA structure? Comments?               |
-| 10   | Auth efficiency          | P1       | Programmatic auth? Storage state reuse?             |
+| Step | Check                    | Severity     | What to look for                                   |
+|------|--------------------------|--------------|-----------------------------------------------------|
+| 1    | False Prophets           | 🔴 Critical  | Meaningful visible-outcome assertions?              |
+| 2    | Flakiness                | 🔴 Critical  | Non-deterministic elements? Race conditions? Shared data? |
+| 3    | Isolation                | 🔴 Critical  | Tests independent? Own data? No order dependency?   |
+| 4    | Waits                    | 🟠 High      | `sleep()`? Proper wait-for-condition strategy?      |
+| 5    | Selectors                | 🟠 High      | CSS/XPath? Accessible selectors used?               |
+| 6    | Coverage                 | 🟠 High      | Critical user journeys tested?                      |
+| 7    | Abstraction              | 🟠 High      | Page Objects? Code duplication?                     |
+| 8    | Data management          | 🟠 High      | API setup? Cleanup? Data isolation?                 |
+| 9    | Readability              | 🟡 Medium    | Clear names? AAA structure? Comments?               |
+| 10   | Auth efficiency          | 🟠 High      | Programmatic auth? Storage state reuse?             |

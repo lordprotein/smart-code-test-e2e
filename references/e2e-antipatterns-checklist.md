@@ -4,7 +4,7 @@
 
 ---
 
-## 1. The Sleeper (P1)
+## 1. The Sleeper (🟠 High)
 
 **What:** Tests use `sleep()`, `wait(ms)`, or hardcoded delays instead of waiting for conditions.
 
@@ -29,7 +29,7 @@ test_order_submission():
 
 ---
 
-## 2. The Ice Cream Cone (P1)
+## 2. The Ice Cream Cone (🟠 High)
 
 **What:** Too many E2E tests, too few unit/integration tests. The test pyramid is inverted.
 
@@ -51,7 +51,7 @@ test_email_validation():
 
 ---
 
-## 3. The Chain Gang (P0/P1)
+## 3. The Chain Gang (🔴 Critical / 🟠 High)
 
 **What:** Tests depend on execution order or data created by previous tests.
 
@@ -80,11 +80,11 @@ test_edit_product():
 
 **Fix:** Each test creates its own data in setup and cleans up in teardown. Tests must pass when run alone, in reverse order, or in parallel.
 
-**Severity note:** P0 when tests completely break if run out of order. P1 when there are soft/implicit dependencies.
+**Severity note:** 🔴 Critical when tests completely break if run out of order. 🟠 High when there are soft/implicit dependencies.
 
 ---
 
-## 4. The Greedy Test (P1)
+## 4. The Greedy Test (🟠 High)
 
 **What:** One test verifies too many unrelated things. Covers multiple flows in a single test function.
 
@@ -113,7 +113,7 @@ test_user_can_update_profile():
 
 ---
 
-## 5. The CSS Sniper (P1)
+## 5. The CSS Sniper (🟠 High)
 
 **What:** Tests use fragile CSS selectors, XPath, or implementation-coupled locators.
 
@@ -144,7 +144,7 @@ page.click(role="button", name="Confirm")
 
 ---
 
-## 6. The UI Typist (P1)
+## 6. The UI Typist (🟠 High)
 
 **What:** Every test logs in through the UI, wasting time on repeated form filling.
 
@@ -170,7 +170,7 @@ test_dashboard():
 
 ---
 
-## 7. The Retry Masker (P1)
+## 7. The Retry Masker (🟠 High)
 
 **What:** Automatic retries hide real flakiness without fixing the root cause.
 
@@ -193,7 +193,7 @@ config:
 
 ---
 
-## 8. The Data Leaker (P0)
+## 8. The Data Leaker (🔴 Critical)
 
 **What:** Test data leaks between tests, causing non-deterministic results.
 
@@ -224,7 +224,7 @@ test_2():
 
 ---
 
-## 9. The False Prophet (P0)
+## 9. The False Prophet (🔴 Critical)
 
 **What:** Test passes but does not actually verify the intended outcome. Gives false confidence.
 
@@ -256,7 +256,7 @@ test_order_placement():
 
 ---
 
-## 10. The Environment Prisoner (P2)
+## 10. The Environment Prisoner (🟡 Medium)
 
 **What:** Test only works in one specific environment. Hardcoded values tie it to localhost or a specific machine.
 
@@ -278,7 +278,7 @@ test_homepage():
 
 ---
 
-## 11. The Pixel Watcher (P2)
+## 11. The Pixel Watcher (🟡 Medium)
 
 **What:** Using visual regression screenshots as functional assertions. Any CSS change breaks functional tests.
 
@@ -302,7 +302,7 @@ test_checkout_works():
 
 ---
 
-## 12. The Network Optimist (P1)
+## 12. The Network Optimist (🟠 High)
 
 **What:** Tests only cover the happy path for network interactions. No error or timeout scenarios tested.
 
@@ -337,17 +337,17 @@ test_payment_timeout():
 
 ## Quick Reference Detection Table
 
-| Antipattern              | Key Signal                           | Severity |
-|--------------------------|--------------------------------------|----------|
-| The Sleeper              | `sleep()` / `wait(ms)` in test       | P1       |
-| The Ice Cream Cone       | >15% E2E, simple logic in E2E       | P1       |
-| The Chain Gang           | Tests depend on execution order      | P0/P1    |
-| The Greedy Test          | 20+ assertions, vague name           | P1       |
-| The CSS Sniper           | CSS/XPath selectors                  | P1       |
-| The UI Typist            | UI login in every test               | P1       |
-| The Retry Masker         | `retries: 3` hiding flakiness        | P1       |
-| The Data Leaker          | Shared mutable test data             | P0       |
-| The False Prophet        | No meaningful assertion              | P0       |
-| The Environment Prisoner | Hardcoded URLs/ports                 | P2       |
-| The Pixel Watcher        | Screenshot for functional test       | P2       |
-| The Network Optimist     | No error/timeout scenarios           | P1       |
+| Antipattern              | Key Signal                           | Severity        |
+|--------------------------|--------------------------------------|-----------------|
+| The Sleeper              | `sleep()` / `wait(ms)` in test       | 🟠 High         |
+| The Ice Cream Cone       | >15% E2E, simple logic in E2E       | 🟠 High         |
+| The Chain Gang           | Tests depend on execution order      | 🔴 Critical / 🟠 High |
+| The Greedy Test          | 20+ assertions, vague name           | 🟠 High         |
+| The CSS Sniper           | CSS/XPath selectors                  | 🟠 High         |
+| The UI Typist            | UI login in every test               | 🟠 High         |
+| The Retry Masker         | `retries: 3` hiding flakiness        | 🟠 High         |
+| The Data Leaker          | Shared mutable test data             | 🔴 Critical     |
+| The False Prophet        | No meaningful assertion              | 🔴 Critical     |
+| The Environment Prisoner | Hardcoded URLs/ports                 | 🟡 Medium       |
+| The Pixel Watcher        | Screenshot for functional test       | 🟡 Medium       |
+| The Network Optimist     | No error/timeout scenarios           | 🟠 High         |

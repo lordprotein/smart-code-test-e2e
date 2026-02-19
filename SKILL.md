@@ -25,12 +25,12 @@ This skill is focused **exclusively on E2E testing**:
 
 ## Severity Levels
 
-| Level | Name | Description | Action |
-|-------|------|-------------|--------|
-| **P0** | Critical | False confidence (test passes but doesn't verify outcome), flaky tests (non-deterministic pass/fail), shared test data (tests pollute each other) | Must fix immediately |
-| **P1** | High | sleep()/hardcoded waits, test order dependency, UI login in every test, fragile selectors (CSS/XPath), missing critical flow coverage | Should fix before merge |
-| **P2** | Medium | Readability, naming, poor test organization, environment-specific tests | Fix in this PR or follow-up |
-| **P3** | Low | Style, minor suggestions | Optional improvement |
+| Badge | Level | Description | Action |
+|-------|-------|-------------|--------|
+| 🔴 | **Critical** | False confidence (test passes but doesn't verify outcome), flaky tests (non-deterministic pass/fail), shared test data (tests pollute each other) | Must fix immediately |
+| 🟠 | **High** | sleep()/hardcoded waits, test order dependency, UI login in every test, fragile selectors (CSS/XPath), missing critical flow coverage | Should fix before merge |
+| 🟡 | **Medium** | Readability, naming, poor test organization, environment-specific tests | Fix in this PR or follow-up |
+| 🟢 | **Low** | Style, minor suggestions | Optional improvement |
 
 ---
 
@@ -253,24 +253,24 @@ Risk tags: `PAYMENT`, `AUTH`, `DATA_INTEGRITY`, `PII`, `COMPLIANCE` — override
 - Load `references/waiting-and-synchronization.md` for wait strategy assessment.
 
 **MANDATORY procedure** — follow this exact sequence for every review. Do NOT skip steps or merge findings:
-1. **Scan for False Prophets** (P0) — meaningful visible-outcome assertions?
-2. **Check flakiness risk** (P0) — non-deterministic elements? race conditions?
-3. **Check test isolation** (P0) — shared test data? order dependency?
-4. **Check wait strategy** (P1) — sleep()? hardcoded delays? proper auto-waiting?
-5. **Check selectors** (P1) — CSS/XPath? accessible selectors?
-6. **Check flow coverage** (P1) — critical journeys tested? happy + sad paths?
-7. **Check abstraction** (P1) — Page Objects used? code duplication?
-8. **Check test data** (P1) — API-based setup? proper isolation? cleanup?
-9. **Check readability** (P2) — names describe user journeys? AAA structure?
-10. **Check auth efficiency** (P1) — programmatic login? storage state reuse?
+1. **Scan for False Prophets** (🔴 Critical) — meaningful visible-outcome assertions?
+2. **Check flakiness risk** (🔴 Critical) — non-deterministic elements? race conditions?
+3. **Check test isolation** (🔴 Critical) — shared test data? order dependency?
+4. **Check wait strategy** (🟠 High) — sleep()? hardcoded delays? proper auto-waiting?
+5. **Check selectors** (🟠 High) — CSS/XPath? accessible selectors?
+6. **Check flow coverage** (🟠 High) — critical journeys tested? happy + sad paths?
+7. **Check abstraction** (🟠 High) — Page Objects used? code duplication?
+8. **Check test data** (🟠 High) — API-based setup? proper isolation? cleanup?
+9. **Check readability** (🟡 Medium) — names describe user journeys? AAA structure?
+10. **Check auth efficiency** (🟠 High) — programmatic login? storage state reuse?
 
 ### 3) Assess severity
 
 Assign severity to each finding:
-- **P0**: False confidence (no real assertion), flaky tests, shared mutable test data
-- **P1**: sleep()/hardcoded waits, CSS/XPath selectors, UI login everywhere, test order dependency, missing critical flows, no Page Objects
-- **P2**: Readability, naming, poor organization, environment-specific code
-- **P3**: Style, minor suggestions
+- 🔴 **Critical**: False confidence (no real assertion), flaky tests, shared mutable test data
+- 🟠 **High**: sleep()/hardcoded waits, CSS/XPath selectors, UI login everywhere, test order dependency, missing critical flows, no Page Objects
+- 🟡 **Medium**: Readability, naming, poor organization, environment-specific code
+- 🟢 **Low**: Style, minor suggestions
 
 ### 4) Output format
 
@@ -286,20 +286,20 @@ Assign severity to each finding:
 
 ## Findings
 
-### P0 - Critical
+### 🔴 Critical
 (none or list)
 
-### P1 - High
+### 🟠 High
 1. **[test_file:line]** Brief title
    - **Antipattern**: Which antipattern
    - **Problem**: What's wrong
    - **Impact**: Why it matters (flakiness, false confidence, slow CI)
    - **Fix**: Suggested correction with code example
 
-### P2 - Medium
+### 🟡 Medium
 2. (continue numbering)
 
-### P3 - Low
+### 🟢 Low
 ...
 
 ---
@@ -322,12 +322,12 @@ Assign severity to each finding:
 
 ## Next Steps
 
-I found X issues (P0: _, P1: _, P2: _, P3: _).
+I found X issues (🔴 Critical: _, 🟠 High: _, 🟡 Medium: _, 🟢 Low: _).
 
 **How would you like to proceed?**
 
 1. **Fix all** — I'll implement all suggested fixes
-2. **Fix P0/P1 only** — Address critical and high priority issues
+2. **Fix Critical/High only** — Address 🔴 and 🟠 issues
 3. **Fix specific items** — Tell me which issues to fix
 4. **No changes** — Review complete, no implementation needed
 
