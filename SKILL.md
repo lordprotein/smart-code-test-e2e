@@ -142,6 +142,11 @@ Risk tags (`PAYMENT`, `AUTH`, `DATA_INTEGRITY`, `PII`, `COMPLIANCE`) override th
 - Use explicit wait-for-condition: wait for text, element, URL change, network idle
 - Set reasonable timeouts (not too short, not too long)
 
+**Typing (TypeScript / typed languages):**
+- Always use real types from the project — import and reuse existing interfaces, types, enums
+- If the real type is not found — use `unknown`, never `any`
+- `any` is forbidden unless there is absolutely no other option
+
 **Data setup:**
 - Prefer API-based setup in beforeEach (create test data via API)
 - Each test manages its own data — no shared mutable test data
